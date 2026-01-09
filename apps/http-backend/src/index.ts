@@ -93,19 +93,42 @@ app.post('/room', middleware, async (req, res) => {
 })
 
 app.get("/chats/:roomId", async (req,res)=>{
-    const roomId = Number(req.params.roomId);
-    const messages = await prismaClient.chat.findMany({
-        where:{
-            roomId:roomId,
-        },
-        orderBy:{
-            id:"desc"
-        },
-        take: 50
-    })
+    try {
+        const roomId = Number(req.params.roomId);
+        const messages = await prismaClient.chat.findMany({
+            where:{
+                roomId:roomId,
+            },
+            orderBy:{
+                id:"desc"
+            },
+            take: 50
+        })
+    
+        res.json({
+            messages
+        })
+    } catch (error) {
+        res.status(403).json({
+            message: error instanceof Error ? error.message : "An error occurred While fetching the chats"
+        })
+    }
+})
 
-    res.json({
-        messages
+app.get('/room/:slug',async (req,res)=>{
+    const slug = req.params.slug;
+    const room = await prismaClient.room.findFirst({
+        where:{
+            slug
+        }
+    })
+    if(!room){
+        return res.status(404).json({
+            message:"No Room Found"
+        })
+    }
+    return res.json({
+        room
     })
 })
 
