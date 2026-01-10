@@ -23,7 +23,7 @@ const ChatRoomClient = ({
             socket.onmessage = (event) => {
                 const parsedData = JSON.parse(event.data);
                 if (parsedData.type === "chat") {
-                    setChats(c => [...c, parsedData.message]);
+                    setChats(c => [...c, {message: parsedData.message}]);
                 }
             }
         }
@@ -34,7 +34,7 @@ const ChatRoomClient = ({
     }, [socket, loading, id])
     return (
         <div>
-            {messages.map((m,indx) => (
+            {chats.map((m,indx) => (
                 <div key={indx}>
                     {m.message}
                 </div>
